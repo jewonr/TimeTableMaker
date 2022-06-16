@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        class Subject {
+            constructor(name, color) {
+                this.name = name;
+                this.color = color;
+            }
+        }
+
+        let subjects = [Subject];
+        let count = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let addButton = document.getElementById('add');
+            let subArea = document.getElementById('sub_area');
+            let subName = document.getElementById('sub_name');
+            let subColor = document.getElementById('sub_color');
+            let submitButton = document.getElementById('submit');
+            let classNum = document.getElementById('class_num');
+            let timeTable = document.getElementById('timetable');
+            let subPicker = document.getElementById('sub_picker');
+
+            addButton.addEventListener('click', (e) => {
+                let span = document.createElement('span');
+                let subject = document.createElement('span');
+                let cancelButton = document.createElement('input');
+
+                if(subName.value != "") {
+                    subjects.push(new Subject(subName.value, subColor.value));
+
+                    count++;
+                    span.setAttribute("id", `subject${count}`);
+
+                    console.log(subjects[1].name);
+                    console.log(subjects[1].color);
+
+                    subject.innerText = subName.value;
+                    subject.style.color = `${subColor.value}`;
+
+                    cancelButton.setAttribute("type", "button");
+                    cancelButton.setAttribute("value", "X");
+
+                    span.appendChild(subject);
+                    span.appendChild(cancelButton);
+                    subArea.append(span);
+                    subName.focus();
+
+                    cancelButton.addEventListener('click', (e) => {
+
+                        subjects.splice(cancelButton.parentElement.id.substr(7), 1);
+                        console.log(subjects);
+
+                        cancelButton.parentElement.remove();
+                        subName.focus();
+                    });
+                }
+            });
+
+            const startMaker = () => {
+                let selectedSub = {
+                    name: "",
+                    color: "",
+                }
+                let isSubSelected = false;
+
+                let selectedTime = {
+                    name: "",
+                    color: "",
+                }
+                let isTimeSelected = Array.from({length: 35}, () => false);
+
+                for(let i=1;i<=classNum.value;i++){
+                    let tr = document.createElement('tr');
+                    let th = document.createElement('th');
+                    th.innerText = `${i}교시`;
+                    tr.append(th);
+                    for(let j=0;j<5;j++){
+                        let td = document.createElement('td');
+                        tr.append(td);
+                    }
+                    timeTable.append(tr);
+                }
+                timeTable.style.visibility = "visible";   
+                subPicker.style.visibility = "visible";
+
+                let arr = subjects.splice(1);
+                arr.map( obj => {
+                    let span = document.createElement('span');
+                    span.innerText = obj.name;
+                    subPicker.append(span);
+                });
+                submitButton.removeEventListener('click', startMaker);
+
+                let nodeArray = Array.prototype.slice.call(subPicker.childNodes)
+                nodeArray.map( (elem, idx) => {
+                    elem.addEventListener('click', () => {
+                        if(selectedSub.name == "" || selectedSub.name == elem.innerText) {
+                            if(!isSubSelected) {
+                                isSubSelected = true;
+                                selectedSub.name = arr[idx].name;
+                                selectedSub.color = arr[idx].color;
+
+                                elem.style.color = arr[idx].color;
+                                elem.style.fontWeight = "bold";
+                            } else {
+                                isSubSelected = false;
+                                selectedSub.name = "";
+                                selectedSub.color = "";
+
+                                elem.style.color = "black"
+                                elem.style.fontWeight = "normal";
+                            }
+                        }
+                    });
+                });
+
+                let classTimes = document.getElementsByTagName('td');
+                classTimes = Array.prototype.slice.call(classTimes);
+                classTimes.map( (elem, idx) => {
+                    elem.addEventListener('click', () => {
+                        console.log(`${idx} 상태 : ${isTimeSelected[idx]}`);
+                        if(!isTimeSelected[idx] || elem.innerText != selectedSub.name) {
+                            console.log(`${idx} 선택`);
+                            if(selectedSub.color == "#000000") {
+                                elem.style.color = "white";
+                            }
+                            isTimeSelected[idx] = true;
+
+                            elem.innerText = selectedSub.name;
+                            elem.style.backgroundColor = selectedSub.color;
+                        } else {
+                            console.log(`${idx} 선택 해제`);
+                            isTimeSelected[idx] = false;
+
+                            elem.innerText = "";
+                            elem.style.backgroundColor = "white";
+                        }
+                    });
+                });
+            }
+
+            submitButton.addEventListener('click', startMaker);
+        });
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #setting {
+            
+        }
+        #maker {
+            /* visibility: hidden; */
+            width: 100%;
+            height: 70%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            flex-direction: column;
+        }
+        #timetable {
+            border: 1px solid black;
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 50%;
+            height: 70%;
+        }
+        td, th {
+        }
+        #sub_picker {
+        }
+        span {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="setting">
+        <div id="classnum">
+            <span>교시 수</span>
+            <input type="number" min="1" max="7" id="class_num" name="class_num">
+        </div>
+        <div>
+            <span>과목 추가</span>
+            <input type="text" id="sub_name">
+            <input type="color" id="sub_color">
+            <input type="button" value="+" id="add">
+            <div id="sub_area"></div>
+        </div>
+        <input type="button" value="확인" id="submit">
+    </div>
+    <div id="maker">
+        <table id="timetable">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>월</th>
+                    <th>화</th>
+                    <th>수</th>
+                    <th>목</th>
+                    <th>금</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="sub_picker"></div>
+    </div>
+</body>
+</html>
