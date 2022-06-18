@@ -26,6 +26,8 @@
             let timeTable = document.getElementById('timetable');
             let subPicker = document.getElementById('sub_picker');
 
+
+            // 새로운 과목 추가
             addButton.addEventListener('click', (e) => {
                 let span = document.createElement('span');
                 let subject = document.createElement('span');
@@ -62,6 +64,7 @@
                 }
             });
 
+            // 시간표 메이커 동작
             const startMaker = () => {
                 let selectedSub = {
                     name: "",
@@ -120,6 +123,7 @@
                     });
                 });
 
+                // toggle 동작
                 let classTimes = document.getElementsByTagName('td');
                 classTimes = Array.prototype.slice.call(classTimes);
                 classTimes.map( (elem, idx) => {
@@ -162,9 +166,6 @@
             align-items: center;
             flex-direction: column;
         }
-        #setting {
-            
-        }
         #maker {
             /* visibility: hidden; */
             width: 100%;
@@ -175,15 +176,13 @@
             flex-direction: column;
         }
         #timetable {
-            border: 1px solid black;
-            border-collapse: collapse;
-            border-spacing: 0;
             width: 50%;
-            height: 70%;
+            height: 50%;
         }
         td, th {
-        }
-        #sub_picker {
+            text-align: center;
+            width: 30px;
+            height: 15px;
         }
         span {
             margin: 10px;
